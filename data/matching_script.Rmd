@@ -1,0 +1,27 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r libraries and data, warning=FALSE,message=FALSE}
+library(tidyverse)
+
+kaggle <- readRDS("./kaggle_international_results.rds")
+elo <- readRDS("./scraped_elo_results.rds")
+```
+
+```{r check matches, warning=FALSE,message=FALSE}
+x <- paste(kaggle$home_team, kaggle$away_team, kaggle$date)
+y <- paste(elo$home, elo$away, elo$date) %>%
+  unique()
+
+kaggle$match <- NA
+kaggle$match[which(x %in% y)] <- 1
+```
+
+```{r missing nations, warning=FALSE,message=FALSE}
+missing <- c(kaggle$home_team[is.na(kaggle$match)], kaggle$away_team[is.na(kaggle$match)]) %>%
+  table() %>%
+  as.data.frame()
+```
+
