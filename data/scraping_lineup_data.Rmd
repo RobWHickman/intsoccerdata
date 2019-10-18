@@ -1,0 +1,145 @@
+---
+title: "scraping lineup data"
+author: "Robert Hickman"
+date: "18/10/2019"
+output: html_document
+---
+
+```{r libaries, warning=FALSE,message=FALSE}
+library(tidyverse)
+library(rvest)
+```
+
+```{r base_url, warning=FALSE,message=FALSE}
+base_url <- "https://www.11v11.com/"
+```
+
+```{r nation_home_links, warning=FALSE,message=FALSE}
+#get links to each nations page
+nations <- base_url %>%
+  paste0(., "internationals/") %>%
+  read_html() %>%
+  html_nodes("ul:nth-child(12) a") %>%
+  html_attr("href") %>%
+  paste0(base_url, .) %>%
+  lapply(., function(x) {
+    if(grepl("-ofc-|-conmebol", x)) {
+      links <- read_html(x) %>%
+        html_nodes(".flag-two-column a") %>%
+        html_attr("href") %>%
+        paste0(., "tab/matches/")
+    } else {
+      links <- read_html(x) %>%
+        html_nodes(".flag-links a") %>%
+        html_attr("href") %>%
+        paste0(., "tab/matches/")
+    }
+    return(links)
+  }) %>%
+  unlist()
+
+```
+
+```{r get_nation_seasons, warning=FALSE,message=FALSE}
+get_season_links <- function(nation) {
+  year_links <- nation %>%
+    read_html() %>%
+    html_nodes("#season a") %>%
+    html_attr("href")
+}
+
+nation_year_links <- nations %>%
+  lapply(., get_season_links) %>%
+  unlist()
+```
+
+```{r}
+get_match_links <- function(season) {
+  match_links <- season %>%
+    read_html() %>%
+    html_nodes(".sortable a") %>%
+    html_attr("href")
+}
+
+match_links <- nation_year_links %>%
+  lapply(., get_match_links) %>%
+  unlist()
+
+saveRDS(match_links, "match_links.rds")
+```
+
+```{r}
+scrape_matches <- function(link) {
+  read <- read_html(link)
+  
+  match_title <- read %>%
+    html_nodes("h1") %>%
+    html_text()
+  
+  baisc_data <- read %>%
+    html_nodes(".basicData") %>%
+    html_text()
+  
+  teams <- read %>%
+    html_nodes(".teamname a") %>%
+    html_text()
+  home <- teams[1]
+  away <- teams[2]
+  
+  score <- read %>%
+    html_nodes(".score") %>%
+    html_text()
+  h_goal <- score[1]
+  a_goal <- score[2]
+
+  h_manager <- read %>%
+    html_nodes(".home b") %>%
+    html_text()
+  a_manager <- read %>%
+    html_nodes(".away b") %>%
+    html_text()
+  
+  goals <- read %>%
+    html_nodes(".goals td") %>%
+    html_text() %>%
+    .[!grepl("\\\n", .)] %>%
+    matrix(nrow = 2) %>%
+    t() %>%
+    as.data.frame()
+  names(goals) <- c("name", "mins")
+  
+  h_lineup <- read %>%
+    html_nodes(".goals+ .lineup .home a") %>%
+    html_text()
+  h_position <- read %>%
+    html_nodes(".home .position") %>%
+    html_text()
+  h_captain <- read %>% 
+    html_nodes(".goals+ .lineup .home .player") %>%
+    html_text() %>%
+    grep("\\(captain\\)", .) %>%
+    h_lineup[.]
+  
+  a_lineup <- read %>%
+    html_nodes(".goals+ .lineup .away a") %>%
+    html_text()
+  a_position <- read %>%
+    html_nodes(".away .position") %>%
+    html_text()
+  a_captain <- read %>% 
+    html_nodes(".goals+ .lineup .away .player") %>%
+    html_text() %>%
+    grep("\\(captain\\)", .) %>%
+    a_lineup[.]
+  
+  h_subs <- read %>%
+    html_nodes(".cards+ .lineup .home a") %>%
+    html_text()
+  h_subs_position <- read %>%
+    html_nodes(".cards+ .lineup .home .position") %>%
+    html_text()
+  h_subs_on <- 
+
+}
+```
+
