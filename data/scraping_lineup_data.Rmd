@@ -14,7 +14,7 @@ library(rvest)
 base_url <- "https://www.11v11.com/"
 ```
 
-```{r nation_home_links, warning=FALSE,message=FALSE}
+```{r nation_home_links, warning=FALSE,message=FALSE,eval=FALSE}
 #get links to each nations page
 nations <- base_url %>%
   paste0(., "internationals/") %>%
@@ -40,7 +40,7 @@ nations <- base_url %>%
 
 ```
 
-```{r get_nation_seasons, warning=FALSE,message=FALSE}
+```{r get_nation_seasons, warning=FALSE,message=FALSE,eval=FALSE}
 get_season_links <- function(nation) {
   year_links <- nation %>%
     read_html() %>%
@@ -53,7 +53,7 @@ nation_year_links <- nations %>%
   unlist()
 ```
 
-```{r}
+```{r get_match_links, warning=FALSE,message=FALSE,eval=FALSE}
 get_match_links <- function(season) {
   match_links <- season %>%
     read_html() %>%
@@ -68,15 +68,133 @@ match_links <- nation_year_links %>%
 saveRDS(match_links, "match_links.rds")
 ```
 
+```{r helper_funcs, warning=FALSE,message=FALSE}
+get_players <- function(read, team) {
+  lineup <- read %>%
+    html_nodes(paste0(".goals+ .lineup ", team, " a")) %>%
+    html_text()
+  if(length(lineup) == 0) lineup <- NA
+  position <- read %>%
+    html_nodes(paste0(".goals+ .lineup ", team, " .position")) %>%
+    html_text()
+  if(length(position) == 0) position <- NA
+  captain <- read %>% 
+    html_nodes(paste0(".goals+ .lineup ", team, " .player")) %>%
+    html_text() %>%
+    grep("\\(captain\\)", .) %>%
+    lineup[.]
+  if(length(captain) == 0) captain <- NA
+  starters <- data.frame(
+    player = lineup,
+    position = position,
+    start = 1,
+    sub_on = NA,
+    sub_off = 0,
+    time_on = 0,
+    time_off = NA
+  ) %>%
+    mutate(captain = ifelse(grepl(captain, player), 1, 0))
+  
+  subs <- read %>%
+    html_nodes(paste0(".cards+ .lineup ", team, " a")) %>%
+    html_text()
+  if(length(subs) == 0) subs <- NA
+  subs_position <- read %>%
+    html_nodes(paste0(".cards+ .lineup ", team, " .position")) %>%
+    html_text()
+  if(length(subs_position) == 0) subs_position <- NA
+  subs_on <- read %>%
+    html_nodes(paste0(team, " .substitute")) %>%
+    html_text() %>%
+    extract_names()
+  subs_off <- read %>%
+    html_nodes(paste0(team, " .substituted")) %>%
+    html_text() %>%
+    extract_names()
+  sub_time <- read %>%
+    html_nodes(paste0(".substitutions ", team, " .time")) %>%
+    html_text() %>%
+    as.numeric()
+  
+  
+  substitutes <- data.frame(
+    player = subs,
+    position = subs_position,
+    start = 0,
+    sub_on = NA,
+    sub_off = NA,
+    time_on = NA,
+    time_off = NA,
+    captain = NA
+  )
+  
+  players <- rbind(starters, substitutes)
+
+  players$time_off[unlist(lapply(subs_off, grep, players$player))] <- sub_time
+  players$time_on[unlist(lapply(subs_on, grep, players$player))] <- sub_time
+  players$sub_off[unlist(lapply(subs_off, grep, players$player))] <- 1
+  players$sub_on[unlist(lapply(subs_on, grep, players$player))] <- 1
+  
+  if(all(is.na(players$player))) {
+    return(NA)
+  } else {
+    return(players)
+  }
+}
+
+get_events <- function(read) {
+  goals <- read %>%
+    html_nodes(".goals td") %>%
+    html_text() %>%
+    .[!grepl("\\\n", .)] %>%
+    matrix(nrow = 2) %>%
+    t() %>%
+    as.data.frame()
+  names(goals) <- c("player", "mins")
+  if(nrow(goals) > 0) goals$event <- "G"
+  
+  cards <- read %>%
+    html_nodes(".cards td") %>%
+    html_text() %>%
+    matrix(nrow = 3) %>%
+    t() %>%
+    as.data.frame()
+  names(cards) <- c("player", "mins", "event")
+  
+  if(nrow(goals) > 0 & nrow(cards) > 0) {
+    events <- rbind(goals, cards) %>%
+      mutate(mins = as.numeric(as.character(mins)),
+             event = as.character(event))
+    
+    events <- events[order(events$mins, str_order(events$event, decreasing = TRUE)),]
+    return(events)
+  } else {
+    return(NA)
+  }
+}
+
+extract_names <- function(text) {
+  munged <- gsub("\\\n|\\\t", "", text)
+}
+
+```
+
+
 ```{r}
+match_links <- readRDS("all_match_links.rds")
+#link <- "https://www.11v11.com/matches/argentina-v-england-30-june-1998-265639/"
+
 scrape_matches <- function(link) {
+  check <<- link
+  link_id = gsub(".*-", "", link) %>%
+    gsub("\\/", "", .)
   read <- read_html(link)
   
   match_title <- read %>%
     html_nodes("h1") %>%
     html_text()
   
-  baisc_data <- read %>%
+  basic_data <- read %>%
     html_nodes(".basicData") %>%
     html_text()
   
@@ -95,51 +213,81 @@ scrape_matches <- function(link) {
   h_manager <- read %>%
     html_nodes(".home b") %>%
     html_text()
+  if(length(h_manager) == 0) h_manager <- NA
   a_manager <- read %>%
     html_nodes(".away b") %>%
     html_text()
+  if(length(a_manager) == 0) a_manager <- NA
   
-  goals <- read %>%
-    html_nodes(".goals td") %>%
-    html_text() %>%
-    .[!grepl("\\\n", .)] %>%
-    matrix(nrow = 2) %>%
-    t() %>%
-    as.data.frame()
-  names(goals) <- c("name", "mins")
+  home_players <- get_players(read, ".home")
+  away_players <- get_players(read, ".away")
+ 
+  events <- get_events(read)
+  events$team <- NA
   
-  h_lineup <- read %>%
-    html_nodes(".goals+ .lineup .home a") %>%
-    html_text()
-  h_position <- read %>%
-    html_nodes(".home .position") %>%
-    html_text()
-  h_captain <- read %>% 
-    html_nodes(".goals+ .lineup .home .player") %>%
-    html_text() %>%
-    grep("\\(captain\\)", .) %>%
-    h_lineup[.]
+  if(!all(is.na(events))) {
+    if(!is.na(home_players)) events$team[which(events$player %in% home_players$player)] <- home
+    if(!is.na(away_players)) events$team[which(events$player %in% away_players$player)] <- away
+    
+    for(event_type in c("G", "Y", "R")) {
+      if(!is.na(home_players)) {
+        home_players <- left_join(
+          home_players,
+          events %>%
+            filter(player %in% home_players$player) %>%
+            filter(event == event_type) %>%
+            select(player) %>%
+            table() %>%
+            as.data.frame() %>%
+            `names<-`(c("player", event_type)),
+          by = "player"
+        )
+      }
+      if(!is.na(away_players)) {
+        away_players <- left_join(
+          away_players,
+          events %>%
+            filter(player %in% away_players$player) %>%
+            filter(event == event_type) %>%
+            select(player) %>%
+            table() %>%
+            as.data.frame() %>%
+            `names<-`(c("player", event_type)),
+          by = "player"
+        )
+      }
+    }
+  }
   
-  a_lineup <- read %>%
-    html_nodes(".goals+ .lineup .away a") %>%
-    html_text()
-  a_position <- read %>%
-    html_nodes(".away .position") %>%
-    html_text()
-  a_captain <- read %>% 
-    html_nodes(".goals+ .lineup .away .player") %>%
-    html_text() %>%
-    grep("\\(captain\\)", .) %>%
-    a_lineup[.]
+  df <- data.frame(
+    id = link_id,
+    link = link,
+    title = match_title,
+    data = basic_data,
+    home,
+    away,
+    h_goal,
+    a_goal,
+    h_manager,
+    a_manager
+  )
   
-  h_subs <- read %>%
-    html_nodes(".cards+ .lineup .home a") %>%
-    html_text()
-  h_subs_position <- read %>%
-    html_nodes(".cards+ .lineup .home .position") %>%
-    html_text()
-  h_subs_on <- 
-
+  df$events <- ifelse(all(is.na(events)), NA, list(events))
+  df$home_players <- ifelse(all(is.na(home_players)), NA, list(home_players))
+  df$away_players <- ifelse(all(is.na(away_players)), NA, list(away_players))
+  
+  print(paste(home, away, sep = " vs. "))
+  return(df)
 }
+
+
+
 ```
+
+```{r get_match_data, warning=FALSE,message=FALSE}
+fail <- "https://www.11v11.com/matches/cameroon-v-libya-08-september-2013-304180/"
+fail <- "https://www.11v11.com/matches/cameroon-v-mauritius-11-october-2008-289987/"
+x <- map_df(match_links[1:1000], scrape_matches)
+```
+
 
