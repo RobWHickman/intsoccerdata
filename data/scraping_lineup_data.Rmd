@@ -78,6 +78,7 @@ get_players <- function(read, team) {
     html_nodes(paste0(".goals+ .lineup ", team, " .position")) %>%
     html_text()
   if(length(position) == 0) position <- NA
+  
   captain <- read %>% 
     html_nodes(paste0(".goals+ .lineup ", team, " .player")) %>%
     html_text() %>%
@@ -175,6 +176,19 @@ get_events <- function(read) {
 
 extract_names <- function(text) {
   munged <- gsub("\\\n|\\\t", "", text)
+}
+
+check_lineup_positions <- function(players, positions, read, team) {
+  if(length(players) != length(positions)) {
+    check <- read %>%
+      html_nodes(paste0(".goals+ .lineup ", team, " .player")) %>%
+      html_text()
+    
+    if(length(position) < 11) {
+      position_present <- unlist(lapply(check, function(x) any(unlist(lapply(position, grepl, x)))))
+      lapply(which(!position_present), function(x) append(position, NA, x))
+    }
+  }
 }
 
 ```
