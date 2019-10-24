@@ -1,0 +1,11 @@
+---
+title: "scraping lineups part 2"
+author: "Robert Hickman"
+date: "21/10/2019"
+output: html_document
+---
+
+```{r libaries, warning=FALSE,message=FALSE}
+library(tidyverse)
+library(rvest)
+```
