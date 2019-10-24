@@ -10,3 +10,4 @@ R package for data on international soccer matches. Idea is to get as full data 
 - https://eu-football.info/
 - https://www.11v11.com/
 - http://www.world-results.net/ ?
+- https://www.football-lineups.com/
