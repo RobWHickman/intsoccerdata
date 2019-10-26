@@ -8,4 +8,39 @@ output: html_document
 ```{r libaries, warning=FALSE,message=FALSE}
 library(tidyverse)
 library(rvest)
+source("../src/scrape_11_v_11_lineups.R")
+source("../src/scrape_11_v_11_match_data.R")
+
+base_url <- "https://www.11v11.com/"
+match_links <- readRDS("all_match_links.rds")
+link <- "https://www.11v11.com/matches/senegal-v-namibia-11-march-2001-270707/"
+
 ```
+
+```{r}
+extract_match_data <- function(link) {
+  check <<- link
+  link_id = gsub(".*-", "", link) %>%
+    gsub("\\/", "", .)
+  read <- read_html(link)
+  
+  basic_data <- get_basic_data(read) %>%
+    mutate(link = link,
+          id = link_id)
+}
+```
+
+```{r check_lineup_scraping}
+#can be e.g.
+#.goals+ .lineup .home a
+#.cards+ .lineup .home a
+
+#team <- ".home"
+team <- ".away"
+type <- ".goals+ .lineup"
+#type <- ".cards+ .lineup"
+
+x <- get_player_positions(read, team, type)
+
+```
+
