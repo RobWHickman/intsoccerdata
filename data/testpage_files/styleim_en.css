@@ -1,0 +1,18 @@
+.imgtit
+{
+content: '';
+display: inline-block;
+  background: url(https://eu-football.info/images/title_en.gif) no-repeat; 
+  width: 0; 
+  padding-left: 420px; 
+padding-top: 60px; 
+}
+.imgtit_mb
+{
+content: '';
+display: inline-block;
+  background: url(https://eu-football.info/images/title_en_mb.gif) no-repeat;
+  padding-left: 350px; 
+padding-top: 50px; 
+margin-top: 20px;  
+}

@@ -1,0 +1,188 @@
+var bgimg = [];
+var bgclr = [];
+var logoimg = [];
+var copytxt = [];
+var copyimgtxt = [];
+var copyclr = [];
+var ctatxt = [];
+var ctaclr = [];
+var ctabgclr = [];
+var tcclr = [];
+var exiturl = [];
+
+function fnalert() {createdom();}
+
+function createdom()
+{
+	$ge("#main-container")[0].style.display="block";
+	$ge("#bgclr")[0].style.background=bgclr[0];
+	$ge("#bgimg1")[0].src=bgimg[0];
+	$ge("#bgimg2")[0].src=bgimg[1];
+	$ge("#bgimg3")[0].src=bgimg[2];
+	$ge("#bgimg4")[0].src=bgimg[3];
+	$ge("#copyimgtxt")[0].src=copyimgtxt[0];
+	$ge("#logoimg")[0].src=logoimg[0];
+	$ge("#ctaparent")[0].style.background=ctabgclr[0];	
+	$ge("#copytxt1")[0].innerHTML = copytxt[0];
+	$ge("#copytxt2")[0].innerHTML = copytxt[1];
+	$ge("#copytxt3")[0].innerHTML = copytxt[2];
+	$ge("#termstxt")[0].innerHTML = copytxt[3];
+	$ge("#ctatxt")[0].innerHTML = ctatxt[0];	
+	$ge("#ctatxt")[0].style.color=ctaclr[0];
+	$ge("#copytxt1")[0].style.color=copyclr[0];
+	$ge("#copytxt2")[0].style.color=copyclr[1];
+	$ge("#copytxt3")[0].style.color=copyclr[2];
+	$ge("#termstxt")[0].style.color=tcclr[0];	
+	
+	newfontresize($ge("#copyparent1")[0],$ge("#copytxt1")[0],$ge("#copytxt1")[0]);
+	newfontresize($ge("#copyparent2")[0],$ge("#copytxt2")[0],$ge("#copytxt2")[0]);	
+	newfontresize($ge("#copyparent3")[0],$ge("#copytxt3")[0],$ge("#copytxt3")[0]);
+	newfontresize($ge("#ctatxtparent")[0],$ge("#ctatxt")[0],$ge("#ctatxt")[0]);
+	newfontresize($ge("#termstxtparent")[0],$ge("#termstxt")[0],$ge("#termstxt")[0]);
+}
+
+var adderf = 0;
+function newfontresize(x,y,z){
+	var t = y;var tp = x; var ct = z; 
+	var cfsize = window.getComputedStyle(z, null).getPropertyValue("font-size");
+	var scfsize = cfsize.split("px");
+	var nscfsize = Number(scfsize[0]);
+	var th = window.getComputedStyle(t, null).getPropertyValue("height"); 
+	th=Number(th.split("px")[0]);
+	var tph = window.getComputedStyle(tp, null).getPropertyValue("height"); 
+	tph=Number(tph.split("px")[0]);
+	var tw = window.getComputedStyle(t, null).getPropertyValue("width"); 
+	tw=Number(tw.split("px")[0]);
+	var tpw = window.getComputedStyle(tp, null).getPropertyValue("width"); 
+	tpw=Number(tpw.split("px")[0]);
+	console.log(th+' '+tph);
+	if(th<=(tph)&& tw<=(tpw)){t.style.fontSize= (nscfsize)+"px";adderf+=1;if(adderf==5){loadafter();}}else{cnfsize(tp,t,ct,nscfsize);}
+}
+
+function cnfsize(a,b,c,bf){	
+	c.style.fontSize = (bf-1)+"px";
+	setTimeout(function(){newfontresize(a,b,c)},10);
+}
+
+var adder=0;
+function loadafter(){ adder++; if(adder==6){animcontrol();}}
+
+	function animcontrol(){
+	
+	panmatr("#ctaparent",null,"{opacity:0;transform:scale(0.65);}","ease-in",0,0);
+	panmatr("@frame",null,"{opacity:0;}","ease-in",0,0);
+	panmatr("#logoparent",null,"{opacity:1;}","ease-in",0,0);
+	panmatr("#frame1",null,"{opacity:1;}","ease-in",0,0);
+	
+	panmatr("#main-container",null,"{opacity:1;}","ease-in",0.5,0);
+ 	panmatr("#frame1",null,"{opacity:0;}","ease-in",2,2);
+	panmatr("#frame2",null,"{opacity:1;}","ease-in",2,2);
+	
+	panmatr("#frame2",null,"{opacity:0;}","ease-in",2,6);
+	panmatr("#frame3",null,"{opacity:1;}","ease-in",2,6);
+	
+	panmatr("#frame3",null,"{opacity:0;}","ease-in",2,10);
+	panmatr("#frame4",null,"{opacity:1;}","ease-in",2,10);
+	panmatr("#ctaparent",null,"{opacity:1;transform:scale(0.95);}","cubic-bezier(0.58, -0.89, 0.35, 2.26)",1,12);
+	panmatr("#ctaparent",null,"{opacity:1;transform:scale(1);}","cubic-bezier(0.58, -0.89, 0.35, 2.26)",0.5,13); 
+	
+ 
+}
+
+function init() {
+  if (Enabler.isPageLoaded()) {
+    pageLoadedHandler();
+  } else {
+    Enabler.addEventListener(studio.events.StudioEvent.PAGE_LOADED, pageLoadedHandler);
+  }
+	/* setadd+=1;
+    if(setadd==1){  */
+	Enabler.setProfileId(10426490);
+    var devDynamicContent = {};
+
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019 = [{}];
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0]._id = 0;
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Copy_Line_1 = "Hello to you";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Copy_Line_2 = "Hello to her";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Copy_Line_3 = "Rooms from \u00A335";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Terms_Conditions_Copy = "Terms and Conditions Apply";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].CTA = "Book Now";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Exit_URL = {};
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Exit_URL.Url = "https://ibis.accorhotels.com/promotions-offers/special-offers/owm004248-001-ibis-hotels-uk-city-breaks.en.shtml";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Copy_Line_Hex_1 = "#000000";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Copy_Line_Hex_2 = "#000000";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Copy_Line_Hex_3 = "#000000";
+    //devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Copy_Line_F4_300x250_Hex = "#ffffff";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Terms_Conditions_Copy_Hex = "#ffffff";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].CTA_Hex = "#000000";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].CTA_Background_Hex = "#ffffff";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Hex_1 = "#ffffff";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Logo_DRM = {};
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Logo_DRM.Type = "file";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Logo_DRM.Url = "https://s0.2mdn.net/ads/richmedia/studio/28790372/28790372_20190318073127070_Logo_ibis_famille_Transparent.png";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_1_DRM = {};
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_1_DRM.Type = "file";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_1_DRM.Url = "http://paragondigitalservices.com/clients/Presto/static/Accor/IBIS/Sprites/bgimg1.png";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_2_DRM = {};
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_2_DRM.Type = "file";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_2_DRM.Url = "http://paragondigitalservices.com/clients/Presto/static/Accor/IBIS/Sprites/bgimg2.png";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_3_DRM = {};
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_3_DRM.Type = "file";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_3_DRM.Url = "http://paragondigitalservices.com/clients/Presto/static/Accor/IBIS/Sprites/bgimg3.png";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_4_DRM = {};
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_4_DRM.Type = "file";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_4_DRM.Url = "http://paragondigitalservices.com/clients/Presto/static/Accor/IBIS/Sprites/bgimg4.png";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Copy_Image_DRM = {};
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Copy_Image_DRM.Type = "file";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Copy_Image_DRM.Url = "http://www.paragondigitalservices.com/clients/Presto/static/Accor/IBIS//main_portal/output/copyimgtxt.png";
+    
+	/*devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Logo_Portal = "https:\/\/s0.2mdn.net\/creatives\/assets\/3201966\/Logo_ibis_famille_Transparent.png";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_1_Portal = "http://paragondigitalservices.com/clients/Presto/static/Accor/IBIS/Sprites/bgimg1.png";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_2_Portal = "http://paragondigitalservices.com/clients/Presto/static/Accor/IBIS/Sprites/bgimg2.png";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_3_Portal = "http://paragondigitalservices.com/clients/Presto/static/Accor/IBIS/Sprites/bgimg3.png";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_4_Portal = "http://paragondigitalservices.com/clients/Presto/static/Accor/IBIS/Sprites/bgimg4.png";
+    devDynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Copy_Image_Portal = "https:\/\/s0.2mdn.net\/creatives\/assets\/3201966\/WE ARE OPEN typo vibis Black.png";
+    
+	confirmboth();
+    }else{ */
+	
+	Enabler.setDevDynamicContent(devDynamicContent);
+	
+	bgimg.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_1_DRM.Url);
+	bgimg.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_2_DRM.Url);
+	bgimg.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_3_DRM.Url);
+	bgimg.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Image_4_DRM.Url);
+	logoimg.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Logo_DRM.Url);
+	bgclr.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Background_Hex_1);
+	copytxt.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Copy_Line_1);
+	copytxt.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Copy_Line_2);
+	copytxt.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Copy_Line_3);
+	copytxt.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Terms_Conditions_Copy);
+	copyclr.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Copy_Line_Hex_1);
+	copyclr.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Copy_Line_Hex_2);
+	copyclr.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Copy_Line_Hex_3);
+	tcclr.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Terms_Conditions_Copy_Hex);
+	copyimgtxt.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Copy_Image_DRM.Url);
+	ctatxt.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].CTA);
+	ctabgclr.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].CTA_Background_Hex);
+	ctaclr.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].CTA_Hex);
+	exiturl.push(dynamicContent.Ibis_Prospecting_MAR_2019_Ibis_Prospecting_MAR_2019[0].Exit_URL.Url);
+  
+	fnalert();
+}
+
+function exitClickHandler() {
+  Enabler.exitOverride("main-container", exiturl[0]);
+}
+
+function pageLoadedHandler() {
+  document.getElementById('main-container').addEventListener('click', exitClickHandler, false);
+}
+function preInit() {
+  if (Enabler.isInitialized()) {
+    init();
+  } else {
+    Enabler.addEventListener(studio.events.StudioEvent.INIT,init);
+  }
+}
+window.addEventListener('load', preInit); 

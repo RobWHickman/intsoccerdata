@@ -1,0 +1,89 @@
+@font-face {
+    font-family: 'Gotham-Medium';
+	src: url('Gotham-Medium.otf');
+}
+body, body * {
+    margin: 0;
+    padding: 0;
+    outline: 0;
+    border: 0 none;
+    vertical-align: baseline; 
+}
+#main-container {
+    position: relative;
+    overflow: hidden;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box; 
+    box-sizing: border-box;
+    width: 728px;  
+    height: 90px;  
+    border: 1px solid #000;  
+    cursor: pointer;
+    left: 0px; 
+    top: 0px;
+	background:#fff;
+	opacity:0;
+	display:none; 
+}
+#feature {
+    overflow: hidden;
+    width: 728px;  
+    height: 90px;  
+    top: -1px;
+    left: -1px;  
+	background:#fff;
+}  
+.frame{ width: 100%;height:100%;} 
+  
+/*common styles*/ 
+.mcommon { 
+    position: absolute;    
+} 
+.relcommon {         
+    position: relative;                  
+}                         
+.seccommmon {                  
+    display: inline-block;          
+    float: left;           
+    width: 100%;     
+}                 
+.transformcommon {        
+    transform: translate(-50%, -50%);        
+    -ms-transform: translate(-50%, -50%); 
+    -webkit-transform: translate(-50%, -50%);       
+    top: 50%;       
+    left: 50%;     
+    text-align: center;        
+    position: relative;     
+}        
+.margincommon {     
+    margin: 0 auto;     
+    left: 0px;         
+    right: 0px;    
+}     
+.margincommonT {
+    margin: auto 0;   
+    top: 0px;    
+    bottom: 0px;     
+}
+
+.bgimgparents{height: 90px;width: 364px;right: 0;overflow: hidden;}
+.bgimgs{height: 690px;width: 760px;top: 0;left: 0;}
+.copyparents{ margin: auto 0;top:0px;bottom: 0px;height: 32px;width: 176px;left:32px;}
+#copyparent4{height: 90px;width: 728px;}
+.copytxts{font-size: 23px;font-weight: bold;font-family: 'Gotham-Medium';letter-spacing: 0px;}
+#copytxt4{font-size: 32px;font-weight: bold;font-family: 'Gotham-Medium';letter-spacing: -2px;word-spacing: -2px;}
+#ctaparent{height: 26px;width: 134px;right: 72px;font-family: 'Gotham-Medium';border-radius: 2px;}
+#ctatxtparent{height: 12px;width: 116px;top: 0;right: 0;bottom: 0;left: 0;margin: auto;}
+#ctatxt{float:left;display:inline-block; line-height:1;font-size: 10px;}
+#logoparent{height: 40px;width: 100px;left: 260px;}
+#logoimgparent{height: 100%;width: 100%;}
+#logoimg{height: auto;width: 100%;}
+#termsparent{height: 16px;width: 132px;right: 72px;bottom: 10px;}
+#termstxtparent{height: 12px;width: 130px;}
+#termstxt{font-size: 7px;font-family: 'Gotham-Medium';}
+.bgclr{height: 90px;width: 452px;}
+#bgimg4{height: 690px; width: 760px;top: 0;left: 0;}
+#copyimgtxt{width: 760px;height: 690px;left: 0;top: -600px;}
+
+#bgimgparent4 { height: 90px; width:100%; left:0; }

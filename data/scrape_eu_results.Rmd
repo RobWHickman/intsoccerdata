@@ -1,0 +1,30 @@
+---
+title: "scrape_eu_football"
+output: html_document
+---
+
+```{r libraries, warning=FALSE,message=FALSE}
+library(rvest)
+library(tidyverse)
+```
+
+```{r}
+base_url <- "https://eu-football.info/_matches.php?year=" %>%
+  paste0(1872:2019)
+```
+
+```{r}
+get_match_links <- function(url) {
+  read <- read_html(url)
+  
+  pages <- read %>%
+    html_nodes("a~ a+ a")
+}
+```
+
+```{r}
+page <- read_html("testpage.html") %>%
+  html_nodes(".r6 a") %>%
+  html_attr("href")
+```
+

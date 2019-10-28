@@ -27,6 +27,32 @@ extract_match_data <- function(link) {
   basic_data <- get_basic_data(read) %>%
     mutate(link = link,
           id = link_id)
+  
+  if(check_players_present(read, ".home")) {
+    home_lineup <- get_player_positions(read, ".home", ".goals+ .lineup")
+    if(!all(is.na(home_lineup))) {
+      captain <- read %>% 
+        html_nodes(paste0(".goals+ .lineup ", team, " .player")) %>%
+        html_text() %>%
+        grep("\\(captain\\)", .) %>%
+        lineup[.]
+      if(length(captain) == 0) captain <- NA
+      
+      home_subs <- get_player_positions(read, ".home", ".cards+ .lineup")
+      
+    }
+    
+    
+  } else {
+    home_lineup <- NA
+  }
+  
+  if(check_players_present(read, ".away")) {
+    
+  } else {
+    home_lineup <- NA
+  }
+  
 }
 ```
 
@@ -43,4 +69,5 @@ type <- ".goals+ .lineup"
 x <- get_player_positions(read, team, type)
 
 ```
+
 
