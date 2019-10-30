@@ -6,6 +6,7 @@ output: html_document
 ---
 
 ```{r libaries, warning=FALSE,message=FALSE}
+#rm(list=ls())
 library(tidyverse)
 library(rvest)
 source("../src/scrape_11_v_11_lineups.R")
@@ -13,12 +14,13 @@ source("../src/scrape_11_v_11_match_data.R")
 
 base_url <- "https://www.11v11.com/"
 match_links <- readRDS("all_match_links.rds")
-link <- "https://www.11v11.com/matches/senegal-v-namibia-11-march-2001-270707/"
-
+link <- "https://www.11v11.com/matches/senegal-v-namibia-11-march-2001-270707/" #seng vs
+#link <- "https://www.11v11.com/matches/argentina-v-england-30-june-1998-265639/" #eng vs arg
 ```
 
 ```{r}
 extract_match_data <- function(link) {
+  #get the data for the match
   check <<- link
   link_id = gsub(".*-", "", link) %>%
     gsub("\\/", "", .)
@@ -28,46 +30,121 @@ extract_match_data <- function(link) {
     mutate(link = link,
           id = link_id)
   
-  if(check_players_present(read, ".home")) {
-    home_lineup <- get_player_positions(read, ".home", ".goals+ .lineup")
-    if(!all(is.na(home_lineup))) {
-      captain <- read %>% 
-        html_nodes(paste0(".goals+ .lineup ", team, " .player")) %>%
-        html_text() %>%
-        grep("\\(captain\\)", .) %>%
-        lineup[.]
-      if(length(captain) == 0) captain <- NA
+  teams <- read %>%
+    html_nodes(".teamname a") %>%
+    html_text()
+  home <- teams[[1]]
+  away <- teams[[2]]
+  
+  score <- read %>%
+    html_nodes(".score") %>%
+    html_text()
+  h_goal <- score[1]
+  a_goal <- score[2]
+
+  h_manager <- read %>%
+    html_nodes(".home b") %>%
+    html_text()
+  if(length(h_manager) == 0) h_manager <- NA
+  a_manager <- read %>%
+    html_nodes(".away b") %>%
+    html_text()
+  if(length(a_manager) == 0) a_manager <- NA
+
+  debug1 <<- link
+  
+  #get the players on each team
+  players <- lapply(c(".home", ".away"), function(team) {
+    if(check_players_present(read, team)) {
+      lineup <- get_player_positions(read, team, ".goals+ .lineup", 1) %>%
+        mutate(start = 1,
+               sub_on = NA,
+               sub_off = NA,
+               time_on = 0,
+               time_off = NA,
+               captain = NA
+        )
       
-      home_subs <- get_player_positions(read, ".home", ".cards+ .lineup")
-      
+      if(!all(is.na(lineup))) {
+        captain <- read %>% 
+          html_nodes(paste0(".goals+ .lineup ", team, " .player")) %>%
+          html_text() %>%
+          grep("\\(captain\\)", .)
+        if(length(captain) == 0) captain <- NA
+        
+        if(!is.na(captain)) lineup$captain[captain] <- 1
+
+        subs <- get_player_positions(read, team, ".cards+ .lineup", 0) %>%
+          mutate(start = 0,
+                 sub_on = NA,
+                 sub_off = NA,
+                 time_on = NA,
+                 time_off = NA,
+                 captain = NA
+        )
+        
+        team_players <- rbind(lineup, subs) %>%
+          add_sub_info(., read, team)
+      }
+      return(team_players)
+    } else {
+      return(NA)
+    }
+  })
+  debug2 <<- link
+  
+  home_players <- players[[1]]
+  away_players <- players[[2]]
+  
+  #get the events in the match
+  events <- get_events(read)
+  debug3 <<- link
+
+  if(!is.na(events)) {
+    events$team <- NA
+  
+    if(!all(is.na(events))) {
+      if(!is.na(home_players)) events$team[which(events$player %in% home_players$player)] <- home
+      if(!is.na(away_players)) events$team[which(events$player %in% away_players$player)] <- away
     }
     
-    
+    #merge event data into players
+    full_player_info <- lapply(players, merge_event_info, events)
+    home_player_data <- full_player_info[[1]]
+    away_player_data <- full_player_info[[2]]
   } else {
-    home_lineup <- NA
+    home_player_data <- NA
+    away_player_data <- NA
   }
+  debug4 <<- link
   
-  if(check_players_present(read, ".away")) {
-    
-  } else {
-    home_lineup <- NA
-  }
+  df <- data.frame(
+    id = link_id,
+    link = link,
+    data = basic_data,
+    home,
+    away,
+    h_goal,
+    a_goal,
+    h_manager,
+    a_manager
+  )
+  debug5 <<- link
   
+  df$events <- ifelse(all(is.na(events)), NA, list(events))
+  debug6 <<- link
+  df$home_players <- ifelse(all(is.na(home_player_data)), NA, list(home_player_data))
+  df$away_players <- ifelse(all(is.na(away_player_data)), NA, list(away_player_data))
+  debug7 <<- df
+  return(df)
 }
+  
 ```
 
-```{r check_lineup_scraping}
-#can be e.g.
-#.goals+ .lineup .home a
-#.cards+ .lineup .home a
-
-#team <- ".home"
-team <- ".away"
-type <- ".goals+ .lineup"
-#type <- ".cards+ .lineup"
-
-x <- get_player_positions(read, team, type)
+```{r run, warning=FALSE,message=FALSE}
+x <- map_df(match_links[1:500], extract_match_data)
 
 ```
+
 
 
