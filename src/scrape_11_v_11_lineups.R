@@ -9,16 +9,27 @@ get_player_positions <- function(read, team, type, first11) {
   player <- read %>%
     html_nodes(paste(type, team, "a")) %>%
     html_text()
-  if(length(player) == 0 & first11) player <- check_other_scrapes(read, team, type, "a")
+  if(length(player) == 0) player <- check_other_scrapes(read, team, type, "a", first11)
   position <- read %>%
     html_nodes(paste(type, team, ".position")) %>%
     html_text()
-  if(length(position) == 0 & first11) position <- check_other_scrapes(read, team, type, ".position")
+  if(length(position) == 0) position <- check_other_scrapes(read, team, type, ".position", first11)
 
-  if(length(player) != length(position)) {
+  if((length(player) != length(position)) & !is.na(position)) {
     check <- read %>%
       html_nodes(paste(type, team, ".player")) %>%
       html_text()
+    if(length(check) == 0) {
+      if(first11) {
+        check <- read %>%
+          html_nodes(paste(".headers+ .lineup", team, ".player")) %>%
+          html_text()
+      } else {
+        check <- read %>%
+          html_nodes(paste(".substitutions+ .lineup", team, ".player")) %>%
+          html_text()
+      }
+    }
 
     player_positions <- match_player_positions(check, player, position)
 
@@ -34,6 +45,12 @@ get_player_positions <- function(read, team, type, first11) {
 match_player_positions <- function(check, players, positions) {
   if(length(positions) < length(players)) {
     position_present <- unlist(lapply(check, function(x) any(unlist(lapply(positions, grepl, x)))))
+
+    if(!any(position_present)) {
+      df <- data.frame(player = players,
+                       position = NA)
+      return(df)
+    }
     for(x in which(!position_present)) {
       positions <- append(positions, NA, x)
     }
@@ -66,21 +83,32 @@ check_players_present <- function(read, team) {
 }
 
 #function to try other nodes to scrape players
-check_other_scrapes <- function(read, team, type, extra) {
-  player <- read %>%
-    html_nodes(paste(team, ".player", extra)) %>%
-    html_text()
-  if(length(player) == 0) {
+check_other_scrapes <- function(read, team, type, extra, first11) {
+  if(first11) {
     player <- read %>%
       html_nodes(paste(".headers+ .lineup", team, extra)) %>%
+      html_text()
+    if(length(player) == 0) {
+      player <- read %>%
+        html_nodes(paste(team, ".player", extra)) %>%
+        html_text()
+      if(length(player) == 0) {
+        return(NA)
+      } else {
+        return(player)
+      }
+    } else {
+      return(player)
+    }
+  } else {
+    player <- read %>%
+      html_nodes(paste(".substitutions+ .lineup", team, extra)) %>%
       html_text()
     if(length(player) == 0) {
       return(NA)
     } else {
       return(player)
     }
-  } else {
-    return(player)
   }
 }
 

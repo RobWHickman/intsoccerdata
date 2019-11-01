@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r libaries, warning=FALSE,message=FALSE}
-#rm(list=ls())
+rm(list=ls())
 library(tidyverse)
 library(rvest)
 source("../src/scrape_11_v_11_lineups.R")
@@ -16,6 +16,9 @@ base_url <- "https://www.11v11.com/"
 match_links <- readRDS("all_match_links.rds")
 link <- "https://www.11v11.com/matches/senegal-v-namibia-11-march-2001-270707/" #seng vs
 #link <- "https://www.11v11.com/matches/argentina-v-england-30-june-1998-265639/" #eng vs arg
+link <- "https://www.11v11.com/matches/cameroon-v-egypt-03-february-2004-252600/"
+link <-  "https://www.11v11.com/matches/cameroon-v-mozambique-28-february-1999-266306/"
+link <- "https://www.11v11.com/matches/cameroon-v-benin-06-june-2004-253357/"
 ```
 
 ```{r}
@@ -31,8 +34,9 @@ extract_match_data <- function(link) {
           id = link_id)
   
   teams <- read %>%
-    html_nodes(".teamname a") %>%
+    html_nodes(".teamname") %>%
     html_text()
+  teams <- lapply(teams, function(x) gsub("[0-9]", "", extract_names(x)))
   home <- teams[[1]]
   away <- teams[[2]]
   
@@ -51,8 +55,6 @@ extract_match_data <- function(link) {
     html_text()
   if(length(a_manager) == 0) a_manager <- NA
 
-  debug1 <<- link
-  
   #get the players on each team
   players <- lapply(c(".home", ".away"), function(team) {
     if(check_players_present(read, team)) {
@@ -71,7 +73,6 @@ extract_match_data <- function(link) {
           html_text() %>%
           grep("\\(captain\\)", .)
         if(length(captain) == 0) captain <- NA
-        
         if(!is.na(captain)) lineup$captain[captain] <- 1
 
         subs <- get_player_positions(read, team, ".cards+ .lineup", 0) %>%
@@ -91,15 +92,12 @@ extract_match_data <- function(link) {
       return(NA)
     }
   })
-  debug2 <<- link
-  
+
   home_players <- players[[1]]
   away_players <- players[[2]]
   
   #get the events in the match
   events <- get_events(read)
-  debug3 <<- link
-
   if(!is.na(events)) {
     events$team <- NA
   
@@ -113,11 +111,20 @@ extract_match_data <- function(link) {
     home_player_data <- full_player_info[[1]]
     away_player_data <- full_player_info[[2]]
   } else {
-    home_player_data <- NA
-    away_player_data <- NA
+    if(!is.na(home_players)) {
+      home_player_data <- home_players %>%
+        mutate( Y = 0, R = 0, G = 0)
+    } else {
+      home_player_data <- NA
+    }
+    if(!is.na(away_players)) {
+      away_player_data <- away_players %>%
+        mutate(Y = 0, R = 0, G = 0)
+    } else {
+      away_player_data <- NA
+    }
   }
-  debug4 <<- link
-  
+
   df <- data.frame(
     id = link_id,
     link = link,
@@ -129,20 +136,17 @@ extract_match_data <- function(link) {
     h_manager,
     a_manager
   )
-  debug5 <<- link
-  
+
   df$events <- ifelse(all(is.na(events)), NA, list(events))
-  debug6 <<- link
   df$home_players <- ifelse(all(is.na(home_player_data)), NA, list(home_player_data))
   df$away_players <- ifelse(all(is.na(away_player_data)), NA, list(away_player_data))
-  debug7 <<- df
   return(df)
 }
   
 ```
 
 ```{r run, warning=FALSE,message=FALSE}
-x <- map_df(match_links[1:500], extract_match_data)
+x <- map_df(match_links[1:1000], extract_match_data)
 
 ```
 
